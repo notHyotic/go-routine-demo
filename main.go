@@ -11,7 +11,7 @@ import (
 
 func tarFiles(files []string, tarName string, progress chan<- int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	defer close(progress)
+	defer close(progress) // defer statement executes in reverse order, so this will close the channel after the function completes
 
 	// Create the tar archive
 	tarOut, err := os.Create(tarName)
@@ -73,6 +73,7 @@ func main() {
 	go tarFiles(files, "output.tar", progress, &wg)
 
 	// Main thread: Show progress
+	// for loop will wait for progress channel to be closed
 	for p := range progress {
 		fmt.Printf("Progress: %d%%\n", p)
 	}
